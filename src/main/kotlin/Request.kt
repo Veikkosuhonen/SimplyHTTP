@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture
 
 object Request {
     private val client = HttpClient.newHttpClient()
+    private val validateBuilder = HttpRequest.newBuilder()
 
     public fun get(url: String) = send(url, "GET")
     public fun post(url: String) = send(url, "POST")
@@ -20,6 +21,15 @@ object Request {
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
         )
 
+    }
+
+    public fun validateUrl(url: String): Boolean {
+        return try {
+            validateBuilder.uri(URI(url))
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
 

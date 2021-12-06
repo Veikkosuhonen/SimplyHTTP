@@ -1,5 +1,6 @@
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -23,15 +24,6 @@ fun UrlInputField(onSubmit: (String) -> Unit) {
     var input by remember { mutableStateOf("") }
     var valid by remember { mutableStateOf(false) }
 
-    fun validateUrl(url: String): Boolean {
-        return try {
-            URI(url).toURL()
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
     fun completeUrl(url: String): String {
         var result: String = url
         if (!url.matches(Regex("^https?://.*"))) {
@@ -40,9 +32,9 @@ fun UrlInputField(onSubmit: (String) -> Unit) {
         return result
     }
 
-    val finalUrlColor: Color by animateColorAsState(if (valid) MaterialTheme.colors.secondary else MaterialTheme.colors.error)
+    val finalUrlColor: Color by animateColorAsState(if (valid) colors.secondary else colors.error)
     val urlResult = completeUrl(input)
-    valid = validateUrl(urlResult)
+    valid = Request.validateUrl(urlResult)
 
     Column(
         modifier = Modifier.padding(8.dp)
@@ -50,8 +42,8 @@ fun UrlInputField(onSubmit: (String) -> Unit) {
         TextField(input, { input = it }, singleLine = true, keyboardActions = KeyboardActions { if (this.equals(Key.Enter)) onSubmit(urlResult) })
         Spacer(modifier = Modifier.height(4.dp))
         Text(urlResult,
-            color = Color.White,
-            modifier = Modifier.background(finalUrlColor).padding(4.dp),
+            color = finalUrlColor,
+            modifier = Modifier.border(1.dp, shape = MaterialTheme.shapes.small, color = finalUrlColor).padding(4.dp),
             style = MaterialTheme.typography.subtitle2
         )
         Spacer(modifier = Modifier.height(4.dp))
