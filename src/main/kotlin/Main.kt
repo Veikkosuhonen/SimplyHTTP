@@ -1,25 +1,16 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.CoroutineName
 
 public val colors = darkColors()
 
@@ -29,39 +20,56 @@ fun App() {
     DesktopMaterialTheme(
         colors = colors,
     ) {
-        Row(Modifier.background(colors.background)) {
-            val requests by remember { mutableStateOf(mutableStateListOf<RequestInfo>()) }
-            val stateVertical = rememberScrollState(0)
+        Surface(Modifier.fillMaxSize(), elevation = 1.dp)  {
+            Row(Modifier.padding(4.dp)) {
+                val requests by remember { mutableStateOf(mutableStateListOf<RequestInfo>()) }
+                var selectedRequest by remember { mutableStateOf<RequestInfo?>(null) }
+                var selectedIsPresent by remember { mutableStateOf(false) }
+                val requestListScrollState = rememberScrollState()
 
-            Surface(
-                elevation = 2.dp,
-                modifier = Modifier.padding(4.dp)
-            ) {
-                Column {
-                    UrlInputField(onSubmit = {
-                        requests.add(Request.get(it))
+                Surface(
+                    elevation = 2.dp,
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    RequestForm(onSubmit = { url, headers, body ->
+                        requests.add(Request.send("GET", url, headers, body))
                     })
                 }
-            }
-            Surface(
-                elevation = 2.dp,
-                modifier = Modifier.padding(4.dp).fillMaxSize()
-            ) {
-                Box {
-                    val state = rememberLazyListState()
+                Column {
 
-                    LazyColumn(Modifier.fillMaxSize().padding(end = 12.dp), state) {
-                        items(requests) {
-                            RequestWidget(it)
-                            Spacer(Modifier.height(4.dp))
+                    Surface(
+                        elevation = 2.dp,
+                        modifier = Modifier.padding(4.dp).fillMaxWidth()
+                    ) {
+
+                        Row(
+                            modifier = Modifier.height(300.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(4.dp).verticalScroll(requestListScrollState)
+                            ) {
+                                LaunchedEffect(requests) {
+                                    requestListScrollState.scrollTo(requestListScrollState.maxValue)
+                                }
+                                requests.forEachIndexed { i, it ->
+                                    RequestItem(i, it) { selectedRequest = it; selectedIsPresent = it.response.isDone }
+                                }
+                            }
+                            VerticalScrollbar(rememberScrollbarAdapter(requestListScrollState))
                         }
                     }
-                    VerticalScrollbar(
-                        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                        adapter = rememberScrollbarAdapter(
-                            scrollState = state
-                        )
-                    )
+                    selectedRequest?.response?.whenComplete { _, _ ->
+                        selectedIsPresent = true
+                    }
+                    selectedRequest?.let {
+                        if (selectedIsPresent)
+                        Surface(
+                            elevation = 2.dp,
+                            modifier = Modifier.padding(4.dp).fillMaxSize()
+                        ) {
+                            RequestView(it.response.get())
+                        }
+                    }
                 }
             }
         }
