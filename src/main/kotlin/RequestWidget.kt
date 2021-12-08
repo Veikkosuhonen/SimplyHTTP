@@ -1,5 +1,6 @@
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -11,13 +12,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import components.ScrollableTextResultField
+import components.TextLabel
+import components.TextResultField
 import java.net.http.HttpResponse
 
 @Composable
-fun RequestItem(index: Int, request: RequestInfo, onSelect: (RequestInfo) -> Unit) {
+fun RequestItem(request: RequestInfo, isSelected: Boolean, onSelect: (RequestInfo) -> Unit) {
     var error by remember { mutableStateOf("") }
     var response by remember { mutableStateOf("") }
-    var isSelected by remember { mutableStateOf(false) }
 
     request.response
         .thenAccept {
@@ -39,16 +42,16 @@ fun RequestItem(index: Int, request: RequestInfo, onSelect: (RequestInfo) -> Uni
         shape = MaterialTheme.shapes.medium,
         elevation = if (isSelected) 6.dp else 3.dp,
         modifier = Modifier
-            //.fillMaxWidth()
             .padding(horizontal = 4.dp, vertical = 3.dp)
             .border(1.dp, if (isSelected) colors.primary else Color.DarkGray, MaterialTheme.shapes.small)
-            .clickable { onSelect(request); isSelected = true }
+            .clickable { onSelect(request) }
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
+                .fillMaxWidth()
         ) {
-            Text(index.toString(), modifier = Modifier.padding(4.dp), color = Color.DarkGray)
+            Text(request.index.toString(), modifier = Modifier.padding(4.dp), color = Color.DarkGray)
             Text(request.request.method(), color = colors.onSurface, modifier = Modifier.padding(4.dp))
             Text(request.request.uri().toString(), color = colors.onSurface, modifier = Modifier.padding(4.dp))
             Spacer(Modifier.width(8.dp))
@@ -63,34 +66,21 @@ fun RequestItem(index: Int, request: RequestInfo, onSelect: (RequestInfo) -> Uni
     }
 }
 
+@Preview
 @Composable
 fun RequestView(response: HttpResponse<String>) {
     Column(modifier = Modifier.padding(8.dp)) {
-
-        Text(response.request().method() + " " + response.request().uri().toString(), Modifier.padding(4.dp))
-        Surface(
-            elevation = (-2).dp,
-            modifier = Modifier.border(
-                    1.dp,
-                    Color.DarkGray,
-                    shape = MaterialTheme.shapes.medium)
-        ) {
-            Box {
-                val verticalScrollState = rememberScrollState()
-                val horizontalScrollState = rememberScrollState()
-
-                Box(Modifier.horizontalScroll(horizontalScrollState).verticalScroll(verticalScrollState)) {
-                    Text(
-                        text = response.body(),
-                        softWrap = false,
-                        modifier = Modifier
-                            .focusable()
-                            .padding(8.dp)
-                    )
-                }
-                HorizontalScrollbar(rememberScrollbarAdapter(horizontalScrollState), Modifier.align(Alignment.BottomCenter))
-                VerticalScrollbar(rememberScrollbarAdapter(verticalScrollState), Modifier.align(Alignment.CenterEnd))
-            }
+        Row {
+            TextLabel("Request: ", 100.dp)
+            TextResultField(response.request().method())
+            TextResultField(response.request().uri().toString())
         }
+        Spacer(Modifier.height(4.dp))
+        Row {
+            TextLabel("Response: ", 100.dp)
+            TextResultField(response.statusCode().toString())
+        }
+        Spacer(Modifier.height(6.dp))
+        ScrollableTextResultField(Utils.prettyJson(response.body()))
     }
 }

@@ -10,6 +10,8 @@ object Request {
     private val validateBuilder = HttpRequest.newBuilder()
     private val headerRegex = Regex("([A-Z][a-z]*\\-?)+:\\s[^:]+")
 
+    private var currentIndex = 0
+
     fun send(method: String, url: String, headers: String = "", body: String = ""): RequestInfo {
         val request = HttpRequest
             .newBuilder(URI(url))
@@ -17,6 +19,7 @@ object Request {
             .headersString(headers)
             .build()
         return RequestInfo(
+            currentIndex++,
             request,
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
         )
@@ -46,6 +49,7 @@ object Request {
 }
 
 data class RequestInfo(
+    val index: Int,
     val request: HttpRequest,
     val response: CompletableFuture<HttpResponse<String>>
 )

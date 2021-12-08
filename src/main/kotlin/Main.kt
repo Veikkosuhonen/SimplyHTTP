@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.CoroutineName
+import java.lang.Exception
 
 public val colors = darkColors()
 
@@ -51,15 +52,17 @@ fun App() {
                                 LaunchedEffect(requests) {
                                     requestListScrollState.scrollTo(requestListScrollState.maxValue)
                                 }
-                                requests.forEachIndexed { i, it ->
-                                    RequestItem(i, it) { selectedRequest = it; selectedIsPresent = it.response.isDone }
+                                requests.forEach {
+                                    RequestItem(it, isSelected = selectedIsPresent && it.index == selectedRequest!!.index) {
+                                        selectedRequest = it; selectedIsPresent = it.response.isDone
+                                    }
                                 }
                             }
                             VerticalScrollbar(rememberScrollbarAdapter(requestListScrollState))
                         }
                     }
-                    selectedRequest?.response?.whenComplete { _, _ ->
-                        selectedIsPresent = true
+                    selectedRequest?.response?.whenComplete { _, error ->
+                        selectedIsPresent = error !is Exception
                     }
                     selectedRequest?.let {
                         if (selectedIsPresent)

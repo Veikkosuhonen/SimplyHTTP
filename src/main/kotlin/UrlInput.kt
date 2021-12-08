@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 private fun completeUrl(url: String): String {
@@ -65,7 +66,7 @@ private fun UrlInput(input: String, result: String, valid: Boolean, onChange: (S
     val fieldColor: Color by animateColorAsState(if (valid) colors.secondary else colors.error)
 
     Column {
-        FormTextField(input, { onChange(it) }, isError = !valid, placeholder = "url")
+        FormTextField(input, { onChange(it) }, isError = !valid, placeholder = "url", singleLine = true)
         Spacer(modifier = Modifier.height(4.dp))
         Text(result,
             color = fieldColor,
@@ -88,7 +89,7 @@ private fun HeadersInput(input: String, valid: Boolean, onChange: (String) -> Un
 private fun BodyInput(input: String, valid: Boolean, onChange: (String) -> Unit) {
     Column {
         Text("Body")
-        FormTextField(input, { onChange(it) }, isError = !valid, placeholder = "empty body")
+        FormTextField(input, { onChange(it) }, isError = false, placeholder = "empty body")
     }
 }
 
@@ -101,6 +102,7 @@ fun FormTextField(
     onChange: (String) -> Unit,
     isError: Boolean,
     placeholder: String,
+    singleLine: Boolean = false
 ) = OutlinedTextField(
-    value, onChange, isError = isError, placeholder = { PlaceHolder(placeholder) }
+    value, onChange, isError = isError, placeholder = { PlaceHolder(placeholder) }, singleLine = singleLine
 )

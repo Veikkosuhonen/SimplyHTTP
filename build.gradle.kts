@@ -19,6 +19,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(compose.desktop.currentOs)
+    implementation("com.google.code.gson:gson:2.8.9")
 }
 
 tasks.test {
@@ -36,6 +37,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Compose-test"
             packageVersion = "1.0.0"
+            modules("java.instrument", "java.net.http", "java.sql", "jdk.unsupported")
         }
     }
 }
