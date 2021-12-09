@@ -1,42 +1,49 @@
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollable
+@file:OptIn(ExperimentalTime::class)
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import components.ScrollableTextResultField
 import components.TextLabel
 import components.TextResultField
+import kotlinx.coroutines.delay
 import java.net.http.HttpResponse
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 @Composable
-fun RequestItem(request: RequestInfo, isSelected: Boolean, onSelect: (RequestInfo) -> Unit) {
-    var error by remember { mutableStateOf("") }
-    var response by remember { mutableStateOf("") }
+fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (ResponseData) -> Unit) {
 
-    request.response
+    var response by remember { mutableStateOf<HttpResponse<String>?>(null) }
+    var error by remember { mutableStateOf("") }
+    var duration by remember { mutableStateOf(Duration.ZERO) }
+
+    Request.send(requestData)
         .thenAccept {
-            response = it.statusCode().toString()
+            response = it
         }.exceptionally {
             error = it.message.toString()
-            response = "Error"
             null
         }
 
-    val responseColor = when(response) {
-        "200" -> Color.Green
-        "Error" -> colors.error
-        else -> Color.Blue
+    if (response == null && error.isEmpty())
+    LaunchedEffect(requestData) {
+        val step = Duration.milliseconds(10)
+        val start = System.currentTimeMillis()
+        while (true) {
+            delay(step)
+            duration = Duration.Companion.milliseconds(System.currentTimeMillis() - start)
+        }
     }
-    val statusColor: Color by animateColorAsState(responseColor)
 
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -44,43 +51,49 @@ fun RequestItem(request: RequestInfo, isSelected: Boolean, onSelect: (RequestInf
         modifier = Modifier
             .padding(horizontal = 4.dp, vertical = 3.dp)
             .border(1.dp, if (isSelected) colors.primary else Color.DarkGray, MaterialTheme.shapes.small)
-            .clickable { onSelect(request) }
+            .clickable { onSelect(ResponseData(requestData, response, duration)) }
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
         ) {
-            Text(request.index.toString(), modifier = Modifier.padding(4.dp), color = Color.DarkGray)
-            Text(request.request.method(), color = colors.onSurface, modifier = Modifier.padding(4.dp))
-            Text(request.request.uri().toString(), color = colors.onSurface, modifier = Modifier.padding(4.dp))
+            TextLabel(requestData.index.toString(), color = Color.DarkGray)
+            TextLabel(requestData.method)
+            TextLabel(requestData.url)
             Spacer(Modifier.width(8.dp))
-            Text(text = response,
-                color = Color.DarkGray,
-                modifier = Modifier.padding(5.dp).background(statusColor),
-                fontStyle = FontStyle.Italic
-            )
+            response?.let {
+                Text(text = it.statusCode().toString(),
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(4.dp).background(Color.Green),
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            if (error.isNotEmpty()) {
+                TextLabel(error, color = colors.error)
+            }
             Spacer(Modifier.width(8.dp))
-            Text(error, color = colors.onSurface, modifier = Modifier.padding(4.dp))
+            TextLabel(duration.toString())
         }
     }
 }
 
-@Preview
 @Composable
-fun RequestView(response: HttpResponse<String>) {
+fun RequestView(response: ResponseData) {
     Column(modifier = Modifier.padding(8.dp)) {
         Row {
             TextLabel("Request: ", 100.dp)
-            TextResultField(response.request().method())
-            TextResultField(response.request().uri().toString())
+            TextResultField(response.requestData.method)
+            TextResultField(response.requestData.url)
         }
         Spacer(Modifier.height(4.dp))
-        Row {
-            TextLabel("Response: ", 100.dp)
-            TextResultField(response.statusCode().toString())
+        response.response?.let {
+            Row {
+                TextLabel("Response: ", 100.dp)
+                TextResultField(it.statusCode().toString())
+            }
+            Spacer(Modifier.height(6.dp))
+            ScrollableTextResultField(Utils.prettyJson(it.body()))
         }
-        Spacer(Modifier.height(6.dp))
-        ScrollableTextResultField(Utils.prettyJson(response.body()))
     }
 }

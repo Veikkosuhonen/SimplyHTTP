@@ -23,17 +23,18 @@ fun App() {
     ) {
         Surface(Modifier.fillMaxSize(), elevation = 1.dp)  {
             Row(Modifier.padding(4.dp)) {
-                val requests by remember { mutableStateOf(mutableStateListOf<RequestInfo>()) }
-                var selectedRequest by remember { mutableStateOf<RequestInfo?>(null) }
-                var selectedIsPresent by remember { mutableStateOf(false) }
+                val requests by remember { mutableStateOf(mutableStateListOf<RequestData>()) }
+                var selected by remember { mutableStateOf<ResponseData?>(null) }
                 val requestListScrollState = rememberScrollState()
+
+                var index = 0
 
                 Surface(
                     elevation = 2.dp,
                     modifier = Modifier.padding(4.dp)
                 ) {
                     RequestForm(onSubmit = { url, headers, body ->
-                        requests.add(Request.send("GET", url, headers, body))
+                        requests.add(RequestData(index++, "GET", url, headers, body))
                     })
                 }
                 Column {
@@ -49,28 +50,21 @@ fun App() {
                             Column(
                                 modifier = Modifier.padding(4.dp).verticalScroll(requestListScrollState)
                             ) {
-                                LaunchedEffect(requests) {
-                                    requestListScrollState.scrollTo(requestListScrollState.maxValue)
-                                }
                                 requests.forEach {
-                                    RequestItem(it, isSelected = selectedIsPresent && it.index == selectedRequest!!.index) {
-                                        selectedRequest = it; selectedIsPresent = it.response.isDone
+                                    RequestItem(it, false) { response ->
+                                        selected = response
                                     }
                                 }
                             }
                             VerticalScrollbar(rememberScrollbarAdapter(requestListScrollState))
                         }
                     }
-                    selectedRequest?.response?.whenComplete { _, error ->
-                        selectedIsPresent = error !is Exception
-                    }
-                    selectedRequest?.let {
-                        if (selectedIsPresent)
+                    selected?.let {
                         Surface(
                             elevation = 2.dp,
                             modifier = Modifier.padding(4.dp).fillMaxSize()
                         ) {
-                            RequestView(it.response.get())
+                            RequestView(it)
                         }
                     }
                 }

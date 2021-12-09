@@ -1,9 +1,13 @@
+@file:OptIn(ExperimentalTime::class)
+
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpHeaders
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.concurrent.CompletableFuture
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 object Request {
     private val client = HttpClient.newHttpClient()
@@ -12,17 +16,14 @@ object Request {
 
     private var currentIndex = 0
 
-    fun send(method: String, url: String, headers: String = "", body: String = ""): RequestInfo {
+    fun send(requestData: RequestData): CompletableFuture<HttpResponse<String>> {
         val request = HttpRequest
-            .newBuilder(URI(url))
-            .method(method, HttpRequest.BodyPublishers.noBody())
-            .headersString(headers)
+            .newBuilder(URI(requestData.url))
+            .method(requestData.method, HttpRequest.BodyPublishers.noBody())
+            .headersString(requestData.headers)
+            .timeout(java.time.Duration.ofSeconds(10L))
             .build()
-        return RequestInfo(
-            currentIndex++,
-            request,
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-        )
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
     }
 
     private fun HttpRequest.Builder.headersString(input: String): HttpRequest.Builder {
@@ -48,8 +49,16 @@ object Request {
     }
 }
 
-data class RequestInfo(
-    val index: Int,
-    val request: HttpRequest,
-    val response: CompletableFuture<HttpResponse<String>>
+data class RequestData(
+    val index: Int = 0,
+    val method: String,
+    val url: String,
+    val headers: String = "",
+    val body: String = ""
+)
+
+data class ResponseData(
+    val requestData: RequestData,
+    val response: HttpResponse<String>?,
+    val duration: Duration
 )

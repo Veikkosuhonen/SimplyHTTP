@@ -15,14 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import colors
 
 @Composable
-fun TextLabel(text: String, requiredWidth: Dp = Dp.Unspecified) {
+fun TextLabel(text: String, requiredWidth: Dp = Dp.Unspecified, color: Color = colors.onSurface) {
     Text(
         text = text,
         modifier = Modifier
             .padding(8.dp)
-            .requiredWidthIn(requiredWidth)
+            .requiredWidthIn(requiredWidth),
+        color = color
     )
 }
 
