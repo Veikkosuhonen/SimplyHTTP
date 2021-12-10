@@ -27,13 +27,16 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
     var error by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf(Duration.ZERO) }
 
-    Request.send(requestData)
-        .thenAccept {
-            response = it
-        }.exceptionally {
-            error = it.message.toString()
-            null
-        }
+    LaunchedEffect(requestData) {
+        Logger.log("Launching " + requestData.url)
+        Request.send(requestData)
+            .thenAccept {
+                response = it
+            }.exceptionally {
+                error = it.message.toString()
+                null
+            }
+    }
 
     if (response == null && error.isEmpty())
     LaunchedEffect(requestData) {

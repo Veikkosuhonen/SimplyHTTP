@@ -15,3 +15,7 @@ object Utils {
         }
     }
 }
+
+object Logger {
+    fun log(string: String) = println(string)
+}
