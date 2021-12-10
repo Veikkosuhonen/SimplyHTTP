@@ -31,13 +31,28 @@ tasks.withType<KotlinCompile>() {
 }
 
 compose.desktop {
+
     application {
+
         mainClass = "MainKt"
+
         nativeDistributions {
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Compose-test"
-            packageVersion = "1.0.0"
+
             modules("java.instrument", "java.net.http", "java.sql", "jdk.unsupported")
+
+            packageName = "Postiman"
+            packageVersion = "1.0.1"
+            version = "1.0.1"
+            description = "Web API Testing Tool"
+            copyright = "GPLv3."
+            vendor = "Veikmaster"
+
+            linux {
+                iconFile.set(project.file("images/icon.png"))
+                appCategory = "utils"
+            }
         }
     }
 }
