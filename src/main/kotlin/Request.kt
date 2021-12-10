@@ -47,14 +47,21 @@ object Request {
     fun validateHeaders(headers: String) = headers.isBlank() || headers.split('\n').all {
         headerRegex.matches(it)
     }
+
+    val METHODS = listOf(
+        "GET", "POST", "PUT", "DELETE", "HEAD"
+    )
+
+    private var index = 0
+    fun nextIndex() = index++
 }
 
 data class RequestData(
-    val index: Int = 0,
     val method: String,
     val url: String,
     val headers: String = "",
-    val body: String = ""
+    val body: String = "",
+    val index: Int = Request.nextIndex(),
 )
 
 data class ResponseData(

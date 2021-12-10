@@ -21,7 +21,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 @Composable
-fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (ResponseData) -> Unit) {
+fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (ResponseData?) -> Unit) {
 
     var response by remember { mutableStateOf<HttpResponse<String>?>(null) }
     var error by remember { mutableStateOf("") }
@@ -51,7 +51,10 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
         modifier = Modifier
             .padding(horizontal = 4.dp, vertical = 3.dp)
             .border(1.dp, if (isSelected) colors.primary else Color.DarkGray, MaterialTheme.shapes.small)
-            .clickable { onSelect(ResponseData(requestData, response, duration)) }
+            .clickable { onSelect(
+                    if (isSelected) null
+                    else ResponseData(requestData, response, duration))
+            }
     ) {
         Row(
             modifier = Modifier
@@ -81,16 +84,18 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
 @Composable
 fun RequestView(response: ResponseData) {
     Column(modifier = Modifier.padding(8.dp)) {
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             TextLabel("Request: ", 100.dp)
             TextResultField(response.requestData.method)
             TextResultField(response.requestData.url)
         }
         Spacer(Modifier.height(4.dp))
         response.response?.let {
-            Row {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 TextLabel("Response: ", 100.dp)
                 TextResultField(it.statusCode().toString())
+                TextLabel("Latency: ", color = Color.DarkGray)
+                TextLabel(response.duration.toString())
             }
             Spacer(Modifier.height(6.dp))
             ScrollableTextResultField(Utils.prettyJson(it.body()))

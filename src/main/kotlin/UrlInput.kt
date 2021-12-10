@@ -8,8 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import components.TextLabel
+import java.net.http.HttpRequest
 
 private fun completeUrl(url: String): String {
     var result: String = url
@@ -20,13 +23,13 @@ private fun completeUrl(url: String): String {
 }
 
 @Composable
-fun RequestForm(onSubmit: (String, String, String) -> Unit) {
+fun RequestForm(onSubmit: (String, String, String, String) -> Unit) {
     Box {
         val state = rememberScrollState()
 
         Column(
-            modifier = Modifier.padding(4.dp).verticalScroll(state),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp).verticalScroll(state),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
 
         ) {
             var urlInput by remember { mutableStateOf("") }
@@ -35,7 +38,10 @@ fun RequestForm(onSubmit: (String, String, String) -> Unit) {
             var validHeaders by remember { mutableStateOf(true) }
             var headers by remember { mutableStateOf("") }
             var body by remember { mutableStateOf("") }
+            var method by remember { mutableStateOf("GET") }
+            var expanded by remember { mutableStateOf(false) }
 
+            MethodSelector(method, { method = it }, expanded, { expanded = it })
             UrlInput(urlInput, urlResult, validUrl) {
                 urlInput = it
                 urlResult = completeUrl(urlInput)
@@ -48,7 +54,7 @@ fun RequestForm(onSubmit: (String, String, String) -> Unit) {
             BodyInput(body, validUrl) {
                 body = it
             }
-            Button(onClick = { onSubmit(urlResult, headers, body) }, enabled = validUrl && validHeaders) {
+            Button(onClick = { onSubmit(method, urlResult, headers, body) }, enabled = validUrl && validHeaders) {
                 Text("Send request")
             }
         }
@@ -58,6 +64,27 @@ fun RequestForm(onSubmit: (String, String, String) -> Unit) {
                 scrollState = state
             ),
         )
+    }
+}
+
+@Composable
+private fun MethodSelector(method: String, onChange: (String) -> Unit, expanded: Boolean, onOpen: (Boolean) -> Unit) {
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        FormLabel("Method")
+        Spacer(modifier = Modifier.width(4.dp))
+        Box {
+            OutlinedButton(onClick = { onOpen(true) }) {
+                Text(method)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { onOpen(false) }) {
+                Request.METHODS.forEach {
+                    DropdownMenuItem(onClick = { onChange(it); onOpen(false) }) {
+                        TextLabel(it)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -73,14 +100,13 @@ private fun UrlInput(input: String, result: String, valid: Boolean, onChange: (S
             modifier = Modifier.border(1.dp, shape = MaterialTheme.shapes.small, color = fieldColor).padding(4.dp),
             style = MaterialTheme.typography.subtitle2
         )
-        Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
 @Composable
 private fun HeadersInput(input: String, valid: Boolean, onChange: (String) -> Unit) {
     Column {
-        Text("Headers")
+        FormLabel("Headers")
         FormTextField(input, { onChange(it) }, isError = !valid, placeholder = "no headers")
     }
 }
@@ -88,7 +114,7 @@ private fun HeadersInput(input: String, valid: Boolean, onChange: (String) -> Un
 @Composable
 private fun BodyInput(input: String, valid: Boolean, onChange: (String) -> Unit) {
     Column {
-        Text("Body")
+        FormLabel("Body")
         FormTextField(input, { onChange(it) }, isError = false, placeholder = "empty body")
     }
 }
@@ -106,3 +132,8 @@ fun FormTextField(
 ) = OutlinedTextField(
     value, onChange, isError = isError, placeholder = { PlaceHolder(placeholder) }, singleLine = singleLine
 )
+
+@Composable
+fun FormLabel(text: String) {
+    Text(text, fontWeight = FontWeight.Light)
+}
