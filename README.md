@@ -12,6 +12,7 @@ A small GUI desktop app for testing APIs
 - Send HTTP-requests with optional headers and body
 - See all sent requests and the response status codes
 - Select a response to examine in more detail
+- Auto-formats JSON-responses
 
 ## Use
 
