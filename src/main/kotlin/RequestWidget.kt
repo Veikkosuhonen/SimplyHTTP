@@ -8,13 +8,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import components.ScrollableTextResultField
-import components.TextLabel
-import components.TextResultField
 import kotlinx.coroutines.delay
 import java.net.http.HttpResponse
 import kotlin.time.Duration
@@ -62,10 +60,11 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
         Row(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TextLabel(requestData.index.toString(), color = Color.DarkGray)
-            TextLabel(requestData.method)
+            TextLabel(requestData.method, style = MaterialTheme.typography.button)
             TextLabel(requestData.url)
             Spacer(Modifier.width(8.dp))
             response?.let {
@@ -79,7 +78,7 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
                 TextLabel(error, color = colors.error)
             }
             Spacer(Modifier.width(8.dp))
-            TextLabel(duration.toString())
+            TextLabel(duration.toString(), color = Color.Gray)
         }
     }
 }

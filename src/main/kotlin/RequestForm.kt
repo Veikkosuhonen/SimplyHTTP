@@ -6,13 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import components.TextLabel
-import java.net.http.HttpRequest
 
 private fun completeUrl(url: String): String {
     var result: String = url
@@ -28,7 +22,7 @@ fun RequestForm(onSubmit: (String, String, String, String) -> Unit) {
         val state = rememberScrollState()
 
         Column(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp).verticalScroll(state),
+            modifier = Modifier.padding(8.dp).verticalScroll(state),
             verticalArrangement = Arrangement.spacedBy(12.dp)
 
         ) {
@@ -74,13 +68,16 @@ private fun MethodSelector(method: String, onChange: (String) -> Unit, expanded:
         FormLabel("Method")
         Spacer(modifier = Modifier.width(4.dp))
         Box {
-            OutlinedButton(onClick = { onOpen(true) }) {
+            TextButton(onClick = { onOpen(true) }, border = BorderStroke(1.dp, Color.DarkGray)) {
                 Text(method)
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { onOpen(false) }) {
                 Request.METHODS.forEach {
                     DropdownMenuItem(onClick = { onChange(it); onOpen(false) }) {
-                        TextLabel(it)
+                        if (method == it)
+                            TextLabel(it, color = colors.primary, style = MaterialTheme.typography.button)
+                        else
+                            TextLabel(it, style = MaterialTheme.typography.button)
                     }
                 }
             }
@@ -107,7 +104,7 @@ private fun UrlInput(input: String, result: String, valid: Boolean, onChange: (S
 private fun HeadersInput(input: String, valid: Boolean, onChange: (String) -> Unit) {
     Column {
         FormLabel("Headers")
-        FormTextField(input, { onChange(it) }, isError = !valid, placeholder = "no headers")
+        LargeTextField(input, { onChange(it) }, isError = !valid, placeholder = "no headers")
     }
 }
 
@@ -115,25 +112,8 @@ private fun HeadersInput(input: String, valid: Boolean, onChange: (String) -> Un
 private fun BodyInput(input: String, valid: Boolean, onChange: (String) -> Unit) {
     Column {
         FormLabel("Body")
-        FormTextField(input, { onChange(it) }, isError = false, placeholder = "empty body")
+        LargeTextField(input, { onChange(it) }, isError = false, placeholder = "empty body")
     }
 }
 
-@Composable
-fun PlaceHolder(text: String) = Text(text, fontStyle = FontStyle.Italic, color = Color.DarkGray)
 
-@Composable
-fun FormTextField(
-    value: String,
-    onChange: (String) -> Unit,
-    isError: Boolean,
-    placeholder: String,
-    singleLine: Boolean = false
-) = OutlinedTextField(
-    value, onChange, isError = isError, placeholder = { PlaceHolder(placeholder) }, singleLine = singleLine
-)
-
-@Composable
-fun FormLabel(text: String) {
-    Text(text, fontWeight = FontWeight.Light)
-}

@@ -12,7 +12,7 @@ import kotlin.time.ExperimentalTime
 object Request {
     private val client = HttpClient.newHttpClient()
     private val validateBuilder = HttpRequest.newBuilder()
-    private val headerRegex = Regex("([A-Z][a-z]*\\-?)+:\\s[^:]+")
+    private val headerRegex = Regex("([\"\']?[A-Za-z]+\\-?)+[\"\']?:\\s*[^:]+")
 
     private var currentIndex = 0
 
