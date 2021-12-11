@@ -16,6 +16,8 @@ A small GUI desktop app for testing HTTP APIs
 
 deb for Linux in the latest release
 
+Please do write an issue if you notice a bug or have a feature request or idea!
+
 ### Building from source
 
 If you want to build binaries for your target platform, use a recent version of IntelliJ Idea with the Compose Multiplatform plugin, and JDK version >= 15
