@@ -2,14 +2,13 @@
 
 import java.net.URI
 import java.net.http.HttpClient
-import java.net.http.HttpHeaders
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-object Request {
+object Client {
     private val client = HttpClient.newHttpClient()
     private val validateBuilder = HttpRequest.newBuilder()
     private val headerRegex = Regex("([\"\']?[A-Za-z]+\\-?)+[\"\']?:\\s*[^:]+")
@@ -61,7 +60,7 @@ data class RequestData(
     val url: String,
     val headers: String = "",
     val body: String = "",
-    val index: Int = Request.nextIndex(),
+    val index: Int = Client.nextIndex(),
 )
 
 data class ResponseData(

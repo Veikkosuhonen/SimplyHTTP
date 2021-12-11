@@ -28,11 +28,13 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
 
     LaunchedEffect(requestData) {
         Logger.log("Launching " + requestData.url)
-        Request.send(requestData)
+        Client.send(requestData)
             .thenAccept {
                 response = it
+                Logger.log("Received response")
             }.exceptionally {
                 error = it.message.toString()
+                Logger.log("Request completed with error")
                 null
             }
     }

@@ -18,17 +18,19 @@ private fun completeUrl(url: String): String {
 
 @Composable
 fun RequestForm(onSubmit: (String, String, String, String) -> Unit) {
+    var urlInput by remember { mutableStateOf("") }
+    var headers by remember { mutableStateOf("") }
+    var body by remember { mutableStateOf("") }
+    var method by remember { mutableStateOf("GET") }
+    var expanded by remember { mutableStateOf(false) }
+
+    val urlResult = completeUrl(urlInput)
+    val validUrl = Client.validateUrl(urlResult)
+    val validHeaders = Client.validateHeaders(headers)
+
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        var urlInput by remember { mutableStateOf("") }
-        var urlResult by remember { mutableStateOf(completeUrl(urlInput)) }
-        var validUrl by remember { mutableStateOf(false) }
-        var validHeaders by remember { mutableStateOf(true) }
-        var headers by remember { mutableStateOf("") }
-        var body by remember { mutableStateOf("") }
-        var method by remember { mutableStateOf("GET") }
-        var expanded by remember { mutableStateOf(false) }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             MethodSelector(method, { method = it }, expanded, { expanded = it })
@@ -39,12 +41,9 @@ fun RequestForm(onSubmit: (String, String, String, String) -> Unit) {
         }
         UrlInput(urlInput, urlResult, validUrl) {
             urlInput = it
-            urlResult = completeUrl(urlInput)
-            validUrl = Request.validateUrl(urlResult)
         }
         HeadersInput(headers, validHeaders) {
             headers = it
-            validHeaders = Request.validateHeaders(headers)
         }
         BodyInput(body, validUrl) {
             body = it
@@ -61,7 +60,7 @@ private fun MethodSelector(method: String, onChange: (String) -> Unit, expanded:
             Text(method)
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { onOpen(false) }) {
-            Request.METHODS.forEach {
+            Client.METHODS.forEach {
                 DropdownMenuItem(onClick = { onChange(it); onOpen(false) }) {
                     if (method == it)
                         TextLabel(it, color = colors.primary, style = MaterialTheme.typography.button)

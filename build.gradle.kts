@@ -3,12 +3,12 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.21"
-    id("org.jetbrains.compose") version "1.0.0-alpha3"
+    kotlin("jvm") version "1.5.31"
+    id("org.jetbrains.compose") version "1.0.0"
 }
 
 group = "me.veikk"
-version = "1.0"
+version = "1.1.2"
 
 repositories {
     google()
@@ -27,7 +27,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 compose.desktop {
@@ -42,11 +42,11 @@ compose.desktop {
 
             modules("java.instrument", "java.net.http", "java.sql", "jdk.unsupported")
 
-            packageName = "Postiman"
-            packageVersion = "1.0.1"
-            version = "1.0.1"
-            description = "Web API Testing Tool"
-            copyright = "GPLv3."
+            packageName = "SimplyHTTP"
+            packageVersion = "1.1.2"
+            version = "1.1.2"
+            description = "HTTP API Testing Tool"
+            copyright = "GPLv3"
             vendor = "Veikmaster"
 
             linux {

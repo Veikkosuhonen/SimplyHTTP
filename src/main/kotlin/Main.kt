@@ -6,7 +6,7 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 
 fun main() = singleWindowApplication(
-    title = "Postiman",
+    title = "SimplyHTTP",
     state = WindowState(width = 1280.dp, height = 768.dp),
     icon = BitmapPainter(useResource("icon.png", ::loadImageBitmap)),
 ) {
