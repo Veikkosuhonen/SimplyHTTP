@@ -16,4 +16,8 @@ A small GUI desktop app for testing APIs
 
 ## Use
 
-Installers for Linux, MacOS and Windows in the latest release
+deb for Linux in the latest release
+
+### Building from source
+
+If you want to build binaries for your target platform, use a recent version of IntelliJ Idea with the Compose Multiplatform plugin, and JDK version >= 15
