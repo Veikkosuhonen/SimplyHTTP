@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -63,7 +64,7 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextLabel(requestData.index.toString(), color = Color.DarkGray)
+            TextLabel(requestData.index.toString(), color = Color.DarkGray, requiredWidth = 50.dp)
             TextLabel(requestData.method, style = MaterialTheme.typography.button)
             TextLabel(requestData.url)
             Spacer(Modifier.width(8.dp))
@@ -87,19 +88,23 @@ fun RequestItem(requestData: RequestData, isSelected: Boolean, onSelect: (Respon
 fun RequestView(response: ResponseData) {
     Column(modifier = Modifier.padding(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            TextLabel("Request: ", 100.dp)
+            TextLabel("Request: ", 100.dp, color = Color.Gray)
             TextResultField(response.requestData.method)
             TextResultField(response.requestData.url)
         }
-        Spacer(Modifier.height(4.dp))
+        Divider(Modifier.padding(vertical = 10.dp))
         response.response?.let {
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                TextLabel("Response: ", 100.dp)
+                TextLabel("Response: ", 100.dp, color = Color.Gray)
                 TextResultField(it.statusCode().toString())
-                TextLabel("Latency: ", color = Color.DarkGray)
-                TextLabel(response.duration.toString())
+                TextLabel("Latency: ", color = Color.Gray)
+                TextResultField(response.duration.toString())
             }
-            Spacer(Modifier.height(6.dp))
+            Divider(Modifier.padding(vertical = 10.dp))
+            TextLabel("Headers", color = Color.Gray)
+            ScrollableTextResultField(Utils.headersToString(it.headers()))
+            Spacer(Modifier.height(4.dp))
+            TextLabel("Body", color = Color.Gray)
             ScrollableTextResultField(Utils.prettyJson(it.body()))
         }
     }

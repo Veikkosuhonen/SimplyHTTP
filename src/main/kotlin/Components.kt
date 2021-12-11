@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -62,7 +63,7 @@ fun TextLabel(text: String, requiredWidth: Dp = Dp.Unspecified, color: Color = c
 
 @Composable
 fun ScrollableTextResultField(text: String) {
-    TextSurface { ScrollableField { SelectableTextField(text) }  }
+    TextSurface { HorizontalScrollableField { SelectableTextField(text) }  }
 }
 
 @Composable
@@ -77,22 +78,10 @@ fun SelectableTextField(text: String) {
             text = text,
             softWrap = false,
             modifier = Modifier
-                .padding(8.dp)
+                .padding(8.dp),
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Light
         )
-    }
-}
-
-@Composable
-fun ScrollableField(composable: @Composable() BoxScope.() -> Unit) {
-    Box {
-        val verticalScrollState = rememberScrollState()
-        val horizontalScrollState = rememberScrollState()
-
-        Box(Modifier.horizontalScroll(horizontalScrollState).verticalScroll(verticalScrollState)) {
-            composable()
-        }
-        HorizontalScrollbar(rememberScrollbarAdapter(horizontalScrollState), Modifier.align(Alignment.BottomCenter))
-        VerticalScrollbar(rememberScrollbarAdapter(verticalScrollState), Modifier.align(Alignment.CenterEnd))
     }
 }
 
@@ -101,10 +90,10 @@ fun HorizontalScrollableField(composable: @Composable() BoxScope.() -> Unit) {
     Box {
         val horizontalScrollState = rememberScrollState()
 
-        Box(Modifier.horizontalScroll(horizontalScrollState)) {
+        Box(Modifier.horizontalScroll(horizontalScrollState).padding(top = 8.dp)) {
             composable()
         }
-        HorizontalScrollbar(rememberScrollbarAdapter(horizontalScrollState), Modifier.align(Alignment.BottomCenter))
+        HorizontalScrollbar(rememberScrollbarAdapter(horizontalScrollState), Modifier.align(Alignment.TopCenter))
     }
 }
 
@@ -118,22 +107,5 @@ fun TextSurface(composable: @Composable () -> Unit) {
             shape = MaterialTheme.shapes.medium)
     ) {
         composable()
-    }
-}
-
-@Composable
-fun OutlineHoverButton(onClick: () -> Unit, content: @Composable RowScope.() -> Unit) {
-    var isHover by remember { mutableStateOf(false) }
-    val borderColor by animateColorAsState(if (isHover) colors.secondary else Color.DarkGray)
-
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.pointerMoveFilter(
-            onExit = { isHover = false; false },
-            onEnter = { isHover = true; true; }
-        ),
-        border = BorderStroke(1.dp, borderColor),
-    ) {
-        content()
     }
 }
