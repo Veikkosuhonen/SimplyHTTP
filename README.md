@@ -1,4 +1,4 @@
-# Postiman
+# SimplyHTTP
 <img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/icon.png width=64>
 
 A small GUI desktop app for testing HTTP APIs
