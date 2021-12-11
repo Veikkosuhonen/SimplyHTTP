@@ -1,5 +1,5 @@
 # Postiman
-<img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/Postiman.png width=64>
+<img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/icon.png width=64>
 
 A small GUI desktop app for testing HTTP APIs
 
