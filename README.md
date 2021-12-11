@@ -1,13 +1,11 @@
-# Postiman
-<img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/Postiman.png width=64>
+# SimplyHTTP
+<img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/icon.png width=64>
 
-A small GUI desktop app for testing APIs
+A small GUI desktop app for testing HTTP APIs
 
 
 
 ## Features
-
-<img src=https://github.com/Veikkosuhonen/postiman/blob/master/images/img.png width=512>
 
 - Send HTTP-requests with optional headers and body
 - See all sent requests and the response status codes
@@ -16,4 +14,10 @@ A small GUI desktop app for testing APIs
 
 ## Use
 
-Installers for Linux, MacOS and Windows in the latest release
+deb for Linux in the latest release
+
+Please do write an issue if you notice a bug or have a feature request or idea!
+
+### Building from source
+
+If you want to build binaries for your target platform, use a recent version of IntelliJ Idea with the Compose Multiplatform plugin, and JDK version >= 15
