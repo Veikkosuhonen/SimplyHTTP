@@ -53,6 +53,11 @@ compose.desktop {
                 iconFile.set(project.file("images/icon.png"))
                 appCategory = "utils"
             }
+
+            windows {
+                shortcut = true
+                iconFile.set(project.file("images/icon.ico"))
+            }
         }
     }
 }
