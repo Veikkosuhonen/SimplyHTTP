@@ -18,7 +18,7 @@ object Client {
     fun send(requestData: RequestData): CompletableFuture<HttpResponse<String>> {
         val request = HttpRequest
             .newBuilder(URI(requestData.url))
-            .method(requestData.method, HttpRequest.BodyPublishers.noBody())
+            .method(requestData.method, HttpRequest.BodyPublishers.ofString(requestData.body))
             .headersString(requestData.headers)
             .timeout(java.time.Duration.ofSeconds(10L))
             .build()
