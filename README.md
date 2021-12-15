@@ -1,5 +1,5 @@
 # SimplyHTTP
-<img src=https://github.com/Veikkosuhonen/postiman/blob/master/src/main/resources/icon.png width=64>
+<img src=https://github.com/Veikkosuhonen/SimplyHTTP/blob/master/src/main/resources/icon.png width=64>
 
 A small GUI desktop app for testing HTTP APIs
 
@@ -14,7 +14,7 @@ A small GUI desktop app for testing HTTP APIs
 
 ## Use
 
-deb for Linux in the latest release
+Get a deb package, msi or a jar from the releases depending on your platform
 
 Please do write an issue if you notice a bug or have a feature request or idea!
 
