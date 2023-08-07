@@ -19,3 +19,5 @@ Recommended to build from source.
 `./gradlew run` for the lazy
 
 `./gradlew package` and install the binary for your platform in `./build/compose/binaries/<build output for your platform>`
+
+You may have to do tunkkaus eg. get at least java 16
