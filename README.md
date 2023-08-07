@@ -14,10 +14,8 @@ A small GUI desktop app for testing HTTP APIs
 
 ## Use
 
-Get a deb package, msi or a jar from the releases depending on your platform
+Recommended to build from source.
 
-Please do write an issue if you notice a bug or have a feature request or idea!
+`./gradlew run` for the lazy
 
-### Building from source
-
-If you want to build binaries for your target platform, use a recent version of IntelliJ Idea with the Compose Multiplatform plugin, and JDK version >= 15
+`./gradlew package` and install the binary for your platform in `./build/compose/binaries/<build output for your platform>`
